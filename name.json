@@ -1,0 +1,23 @@
+{
+    "Remitente":[{
+        "Remitente1":"tonyguizado@gmail.com",
+        "Remitente2":"marcos@gmail.com",
+        "Remitente3":"azul@gmail.com",
+        "Remitente4":"kiosmisk@gmail.com"
+            }],
+
+    "Asunto":[{
+        "Asunto1":"LECTURAS - CAMBIO DE MEDIDOR",
+        "Asunto2":"LECTURAS - ACTUALIZACION FERIADOS"
+            }],
+
+    "Destinatario":[{
+        "Destinatario1":"msegovia@luzdelsur.com",
+        "Destinatario2":"layalao@practicante.luzdelsur.com.pe",
+        "Destinatario3":"dgallo@luzdelsur.com.pe",
+        "Destinatario4":"jtamara@luzdelsur.com.pe",
+        "Destinatario5":"dperez@luzdelsur.com.pe",
+        "Destinatario6":"jmedinal@luzdelsur.com.pe",
+        "Destinatario7":"lvillarr@luzdelsur.com.pe"
+            }]
+}
