@@ -8,45 +8,65 @@
 # acceder al sitio para habilitar contrasena para apps
 # https://myaccount.google.com/u/3/apppasswords
 
+import os
 import json
+import keyring
 import smtplib
 import configparser
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox, simpledialog
-from email.mime.multipart import MIMEMultipart
+from email import encoders
+from PIL import Image, ImageTk
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
-from email import encoders
-import os
-import keyring
-from PIL import Image, ImageTk
 from cryptography.fernet import Fernet
 from keyring.errors import PasswordDeleteError
+from email.mime.multipart import MIMEMultipart
+from tkinter import ttk, filedialog, messagebox, simpledialog
+
 
 # Función para generar una clave de cifrado
 def generate_key():
+    """Genera una clave de cifrado y la guarda en un archivo 'secret.key'."""
     key = Fernet.generate_key()
     with open('secret.key', 'wb') as key_file:
         key_file.write(key)
 
 # Función para cargar la clave de cifrado
 def load_key():
+    """Carga la clave de cifrado desde el archivo 'secret.key'."""
     return open('secret.key', 'rb').read()
 
 # Función para cifrar la contraseña
 def encrypt_password(password):
+    """Cifra la contraseña usando la clave de cifrado.
+
+    Args:
+        password (str): La contraseña en texto plano.
+
+    Returns:
+        bytes: La contraseña cifrada.
+    """
     key = load_key()
     fernet = Fernet(key)
     return fernet.encrypt(password.encode())
 
 # Función para desencriptar la contraseña
 def decrypt_password(encrypted_password):
+    """Desencripta la contraseña usando la clave de cifrado.
+
+    Args:
+        encrypted_password (bytes): La contraseña cifrada.
+
+    Returns:
+        str: La contraseña en texto plano.
+    """
     key = load_key()
     fernet = Fernet(key)
     return fernet.decrypt(encrypted_password).decode()
 
 # Función para cargar configuraciones desde default.ini
 def load_config():
+    """Carga las configuraciones desde el archivo 'default.ini' y actualiza la interfaz."""
     config = configparser.ConfigParser()
     config.read('default.ini')
     if 'SETTINGS' in config:
@@ -58,6 +78,7 @@ def load_config():
 
 # Función para guardar configuraciones en default.ini
 def save_config():
+    """Guarda las configuraciones actuales en el archivo 'default.ini'."""
     config = configparser.ConfigParser()
     config.read('default.ini')
     if 'SETTINGS' not in config:
@@ -71,6 +92,14 @@ def save_config():
 
 # Función para cargar datos del archivo JSON
 def load_json(file_path):
+    """Carga datos desde un archivo JSON.
+
+    Args:
+        file_path (str): Ruta del archivo JSON.
+
+    Returns:
+        dict: Datos cargados desde el archivo JSON.
+    """
     try:
         with open(file_path, 'r') as f:
             data = json.load(f)
@@ -81,6 +110,11 @@ def load_json(file_path):
 
 # Función para actualizar los combobox y listbox con los datos del JSON
 def update_ui_with_json(data):
+    """Actualiza los widgets de la interfaz con los datos del JSON.
+
+    Args:
+        data (dict): Datos del archivo JSON.
+    """
     if data:
         remitentes_combobox['values'] = list(data['Remitente'][0].values())
         remitentes_combobox.current(0)
@@ -95,6 +129,7 @@ def update_ui_with_json(data):
 
 # Función para importar un nuevo archivo de configuración JSON
 def import_new_config():
+    """Importa un nuevo archivo de configuración JSON y actualiza la interfaz."""
     filepath = filedialog.askopenfilename(title="Seleccionar archivo de configuración", filetypes=(("Archivos JSON", "*.json"), ("Todos los archivos", "*.*")))
     if filepath:
         json_path.set(filepath)
@@ -108,6 +143,7 @@ full_file_path = ""
 
 # Función para buscar archivo de plantilla
 def search_file():
+    """Abre un cuadro de diálogo para seleccionar un archivo de plantilla y guarda la ruta."""
     global full_file_path
     filepath = filedialog.askopenfilename(title="Seleccionar archivo de plantilla")
     if filepath:
@@ -117,6 +153,19 @@ def search_file():
 
 # Función para enviar el correo
 def SendEmail(sender_email, password, subject, recipients, body, attachment_path):
+    """Envía un correo electrónico con los detalles proporcionados.
+
+    Args:
+        sender_email (str): Dirección de correo del remitente.
+        password (str): Contraseña del remitente.
+        subject (str): Asunto del correo.
+        recipients (list): Lista de direcciones de correo de los destinatarios.
+        body (str): Cuerpo del correo.
+        attachment_path (str): Ruta del archivo adjunto.
+
+    Returns:
+        bool: True si el correo se envió con éxito, False en caso contrario.
+    """
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
 
@@ -156,6 +205,7 @@ def SendEmail(sender_email, password, subject, recipients, body, attachment_path
 
 # Función para manejar el evento de enviar correo desde la interfaz
 def handle_send_mail():
+    """Maneja el evento de enviar correo desde la interfaz gráfica."""
     sender_email = remitentes_combobox.get()
     subject = asuntos_combobox.get()
     recipients = list(correo_contenedor.get(0, tk.END))
